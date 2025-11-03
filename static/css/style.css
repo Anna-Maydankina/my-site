@@ -129,35 +129,6 @@ nav {
     border-bottom: 2px solid #eddcae;
     padding-bottom: 10px;
 }
-
-.stories-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 25px;
-    padding: 20px 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #453518 #f8f4e8;
-}
-
-.stories-scroll::-webkit-scrollbar {
-    height: 8px;
-}
-
-.stories-scroll::-webkit-scrollbar-track {
-    background: #f8f4e8;
-    border-radius: 10px;
-}
-
-.stories-scroll::-webkit-scrollbar-thumb {
-    background: #453518;
-    border-radius: 10px;
-}
-
-.stories-scroll .story-card {
-    flex: 0 0 auto;
-    width: 320px;
-}
-
 .story-card {
     background: white;
     border-radius: 15px;
@@ -256,4 +227,5 @@ nav {
 
 .card-header[style*="background-color: #dc3545"] {
     border-bottom: 2px solid #c82333;
+
 }

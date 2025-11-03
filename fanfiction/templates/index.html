@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Фанфитастика</title>
+</head>
+<body>
+    <div class="header">
+        <h1 class="site-title">Фанфитастика</h1>
+        <button class="auth-button">Войти</button>
+    </div>
+    
+    <p class="site-description">
+        Сайт с историями по любимым и авторским вселенным.<br>
+        Фанфитастические истории!
+    </p>
+    
+    <nav>
+        <ul class="nav-menu">
+            <li><a href="#">Главная</a></li>
+            <li><a href="#">Популярное</a></li>
+            <li><a href="#">Новое</a></li>
+            <li><a href="#">Жанры</a></li>
+            <li><a href="#">О сайте</a></li>
+        </ul>
+    </nav>
+    
+    <div class="search-container">
+        <input type="text" class="search-box" placeholder="Введите название или тэг...">
+        <button class="search-button">Поиск</button>
+    </div>
+    
+
+
+{% block content %}
+<section class="py-3 py-md-5 mobile-padding" style="background: #fdf6e3;">
+    <div class="container-fluid">  
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 text-center">
+                <h1 class="h2 mb-3" style="color: #453518;">Фанфитастика</h1>
+                <p class="mb-4" style="color: #443a2b;">
+                    Сайт с историями по любимым и авторским вселенным
+                </p>
+                
+                <div class="row g-2 justify-content-center">
+                    <div class="col-12 col-sm-8">
+                        <input type="text" class="form-control form-control-sm" placeholder="Введите название или тэг...">
+                    </div>
+                    <div class="col-12 col-sm-auto">
+                        <button class="btn btn-sm w-100" style="background-color: #453518; color: aliceblue;">
+                            Найти
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="py-3 py-md-4 mobile-padding">
+    <div class="container-fluid">
+        <h2 class="h4 mb-3 text-center" style="color: #453518;">Рекомендованные истории</h2>
+        
+        <div class="row g-3">
+            <div class="story-card">
+                <h3 class="story-title">Сны Снежной</h3>
+                <div class="story-author">Автор: Царица_Льда</div>
+                <p class="story-description">Тайное прошлое Ци Ци и загадочные события в Снежной. Что скрывают ледяные пещеры и древние руины царства Сампо?</p>
+                <div class="story-tags">
+                    <span class="tag">Genshin</span>
+                    <span class="tag">Тайны</span>
+                </div>
+            </div>
+            
+            
+            <div class="story-card">
+                <h3 class="story-title">Дьявол в деталях</h3>
+                <div class="story-author">Автор: Викусик_2015</div>
+                <p class="story-description">Вики Уокер, новенькая студентка в элитном колледже, сталкивается с недружелюбием однокурсников. Особенно ей досаждает наглый и самовлюбленный старшекурсник по имени Люцифер...</p>
+                <div class="story-tags">
+                    <span class="tag">Секрет Небес</span>
+                    <span class="tag">Любовный треугольник</span>
+                    <span class="tag">От ненависти до любви</span>
+                    <span class="tag">Драма</span>
+                    <span class="tag">Эротика</span>
+                </div>
+            </div>
+            
+            <div class="story-card">
+                <h3 class="story-title">Лунная сага</h3>
+                <div class="story-author">Автор: Миротворец</div>
+                <p class="story-description">Юный маг ослушался указа старейшин и пошёл в тёмный лес, где встретил дракона, способного исполнить пророчество.</p>
+                <div class="story-tags">
+                    <span class="tag">Ориджинал</span>
+                    <span class="tag">Фэнтези</span>
+                    <span class="tag">Романтика</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+{% endblock %}
+</body>
+</html>

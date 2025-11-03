@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}Фанфитастика{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #453518;">
+        <div class="container-fluid">
+            <a class="navbar-brand fst-italic" href="/">
+                <strong>Фанфитастика</strong>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Популярное</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Новое</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Жанры</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3 text-light">Привет, {{ user.username }}!</span>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-light me-2">Личный кабинет</a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-light">Выйти</a>
+                    {% else %}
+
+                        <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Войти</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Фанфитастика</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>Помощь</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">О сайте</a></li>
+                        <li><a href="#" class="text-light">Правила</a></li>
+                        <li><a href="#" class="text-light">Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

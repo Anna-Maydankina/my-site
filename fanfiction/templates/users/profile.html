@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="text-center mb-4">
+                <h1 style="color: #453518;">Личный кабинет</h1>
+                <p class="lead">Добро пожаловать в ваш личный кабинет!</p>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header" style="background-color: #453518; color: white;">
+                    <h4 class="mb-0">Основная информация</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Имя пользователя:</th>
+                                    <td>{{ user.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Никнейм:</th>
+                                    <td>
+                                        {% if user.nickname %}
+                                            {{ user.nickname }}
+                                        {% else %}
+                                            <span class="text-muted">Не указан</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>
+                                        {% if user.email %}
+                                            {{ user.email }}
+                                        {% else %}
+                                            <span class="text-muted">Не указан</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Дата регистрации:</th>
+                                    <td>{{ user.date_joined|date:"d.m.Y" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <div class="card mb-4">
+                <div class="card-header" style="background-color: #453518; color: white;">
+                    <h4 class="mb-0">Действия</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <button class="btn w-100" style="background-color: #453518; color: white;">
+                                📝 Новая история
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100">
+                                🔖 Мои закладки
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100">
+                                ⚙️ Настройки
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-secondary w-100">
+                                📊 Статистика
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+             <div class="card mb-4">
+                <div class="card-header" style="background-color: #28a745; color: white;">
+                    <h4 class="mb-0">📢 Опубликованные истории</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">Тест</h5>
+                                        <div>
+                                            <small class="text-muted">Опубликовано: 05.11.2024</small>
+                                            <span class="badge bg-success ms-2">Активно</span>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">Примерный показ для опубликованных историй.</p>
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary me-1">Тест</span>
+                                        <span class="badge bg-info me-1">1.2K просмотров</span>
+                                        <span class="badge bg-warning text-dark">47 лайков</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button class="btn btn-sm btn-outline-primary">Редактировать</button>
+                                        <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                                        <button class="btn btn-sm btn-outline-warning">В архив</button>
+                                        <button class="btn btn-sm btn-outline-secondary">Комментарии (12)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header" style="background-color: #6c757d; color: white;">
+                    <h4 class="mb-0">📁 Мои черновики</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">Тестовик для черновика</h5>
+                                        <small class="text-muted">Изменено: 10.11.2024</small>
+                                    </div>
+                                    <p class="card-text">Примерный вид карточки для черновиков</p>
+                                    <div class="mb-3">
+                                        <span class="badge bg-secondary me-1">Черновик</span>
+                                        <span class="badge bg-secondary">Незавершено</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button class="btn btn-sm btn-outline-primary">Редактировать</button>
+                                        <button class="btn btn-sm btn-outline-success">Опубликовать</button>
+                                        <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header" style="background-color: #ffc107; color: black;">
+                    <h4 class="mb-0">📦 Архив историй</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Тестовик для архива</h5>
+                                <small class="text-muted">В архиве с: 01.11.2024</small>
+                            </div>
+                            <p class="mb-1">Визуализация карточки с историей для архива</p>
+                            <div class="mb-3">
+                                <span class="badge bg-warning text-dark me-1">Учёба</span>
+                                <span class="badge bg-warning text-dark me-1">Тест</span>
+                            </div>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <button class="btn btn-sm btn-outline-success me-1">Восстановить</button>
+                                <button class="btn btn-sm btn-outline-info me-1">Предпросмотр</button>
+                                <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="background-color: #dc3545; color: white;">
+                    <h4 class="mb-0">🗑️ Удаленные истории</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Внимание!</strong> Истории будут окончательно удалены через 30 дней.
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">Тестовик для удаления</h5>
+                                        <small class="text-muted">Удалено: 20.10.2024</small>
+                                    </div>
+                                    <p class="card-text">Цифры пока только для визуализации.</p>
+                                    <div class="mb-3">
+                                        <span class="badge bg-danger me-1">Удалено</span>
+                                        <span class="badge bg-secondary">Удалится: 20.11.2024</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button class="btn btn-sm btn-outline-success">Восстановить</button>
+                                        <button class="btn btn-sm btn-outline-secondary">Предпросмотр</button>
+                                        <button class="btn btn-sm btn-outline-dark">Удалить навсегда</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

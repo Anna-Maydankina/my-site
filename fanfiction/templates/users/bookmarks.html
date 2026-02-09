@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookmarks.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="py-3 py-md-5 mobile-padding">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10">
+                <h1 class="h2 mb-4 text-center page-title">📚 Мои закладки</h1>
+                
+                <!-- Статистика закладок -->
+                <div class="card mb-4 bookmark-stats-card">
+                    <div class="card-header bookmark-stats-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h4 class="mb-2">📖 Ваши сохраненные истории</h4>
+                                <p class="mb-0 opacity-75">Всего закладок: <strong>{{ total_bookmarks }}</strong></p>
+                            </div>
+                            {% if total_bookmarks > 0 %}
+                            <button type="button" class="btn btn-sm mt-2 mt-md-0 clear-all-btn" 
+                                    data-bs-toggle="modal" data-bs-target="#clearModal">
+                                🗑️ Очистить все
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if total_bookmarks == 0 %}
+                    <!-- Пустые закладки -->
+                    <div class="card-body text-center p-5 empty-bookmarks">
+                        <div class="mb-4">
+                            <i class="bi bi-bookmark-star display-1 text-muted mb-3"></i>
+                            <h4 class="h4 mb-3">😔 Нет закладок</h4>
+                            <p class="text-muted mb-4">
+                                Вы еще не добавили ни одного фанфика в закладки
+                            </p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-dark mb-3 fw-bold">Как добавить закладки?</p>
+                            <ul class="instructions-list">
+                                <li>• Нажмите на кнопку "В закладки" на странице фанфика</li>
+                                <li>• Нажимайте на значок закладки 🔖 рядом с фанфиками</li>
+                                <li>• Вы можете добавлять в закладки только опубликованные фанфики</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{% url 'new_fanfics' %}" class="btn me-2 mb-2 new-fanfics-btn">
+                                📚 Посмотреть новые фанфики
+                            </a>
+                            <a href="{% url 'popular_fanfics' %}" class="btn mb-2 popular-fanfics-btn">
+                                🔥 Популярные истории
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Список закладок -->
+                {% if bookmarks %}
+                {% for bookmark in bookmarks %}
+                <div class="story-card mb-4 bookmark-card">
+                    <!-- Заголовок с датой добавления -->
+                    <div class="d-flex justify-content-between align-items-start mb-2 bookmark-header">
+                        <h3 class="story-title mb-0">{{ bookmark.fanfic.title }}</h3>
+                        <div class="text-end">
+                            <small class="bookmark-date">
+                                <i class="bi bi-bookmark-star-fill bookmark-icon"></i>
+                                {{ bookmark.created_at|date:"d.m.Y" }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Автор -->
+                    <div class="story-author mb-2">
+                        Автор: 
+                        <a href="{% url 'user_fanfics' bookmark.fanfic.author.username %}" 
+                           class="author-link">
+                            {{ bookmark.fanfic.author.username }}
+                        </a>
+                    </div>
+                    
+                    <!-- Статистика фанфика -->
+                    <div class="bookmark-stats">
+                        <span>
+                            <i class="bi bi-eye"></i> {{ bookmark.fanfic.views_count }} просмотров
+                        </span>
+                        <span>
+                            <i class="bi bi-calendar"></i> {{ bookmark.fanfic.created_at|date:"d.m.Y" }}
+                        </span>
+                        {% if bookmark.fanfic.is_popular %}
+                        <span class="popular-badge">
+                            <i class="bi bi-fire"></i> Популярный
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Описание -->
+                    {% if bookmark.fanfic.description %}
+                    <p class="story-description">{{ bookmark.fanfic.description|truncatewords:30 }}</p>
+                    {% elif bookmark.fanfic.summary %}
+                    <p class="story-description">{{ bookmark.fanfic.summary|truncatewords:30 }}</p>
+                    {% endif %}
+                    
+                    <!-- Теги -->
+                    {% if bookmark.fanfic.tags %}
+                    <div class="story-tags mb-3">
+                        {% for tag in bookmark.fanfic.get_tags_list %}
+                            {% if tag %}
+                                {% with tag_slug=tag|slugify %}
+                                    {% if tag_slug %}
+                                        <a href="{% url 'tag_detail' tag_slug %}" class="tag">{{ tag }}</a>
+                                    {% else %}
+                                        <span class="tag">{{ tag }}</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Кнопки действий -->
+                    <div class="bookmark-actions">
+                        <div>
+                            <a href="{% url 'fanfic_detail' bookmark.fanfic.pk %}" class="btn btn-read me-2">
+                                <i class="bi bi-book"></i> Читать
+                            </a>
+                            <form method="post" action="{% url 'remove_bookmark' bookmark.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm remove-bookmark-btn">
+                                    <i class="bi bi-bookmark-x"></i> Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- Пагинация -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Навигация по страницам" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">&laquo; Первая</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Модальное окно подтверждения очистки -->
+{% if total_bookmarks > 0 %}
+<div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clearModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Подтверждение
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-bold">Вы уверены, что хотите удалить все закладки?</p>
+                <p class="text-muted"><small>Это действие удалит все {{ total_bookmarks }} сохраненных фанфиков из закладок.</small></p>
+                <p class="text-muted"><small>Это действие нельзя отменить.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'clear_bookmarks' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Да, удалить все</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

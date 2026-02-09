@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Заголовок -->
+    <div class="text-center mb-5">
+        <h1 style="color: #453518; font-family: Georgia, serif;">🏷️ Все теги</h1>
+        <p class="lead" style="color: #443a2b;">
+            {{ total_tags }} тегов в {{ total_fanfics }} фанфиках
+        </p>
+    </div>
+
+    <!-- Поиск -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 style="color: #453518; font-family: Georgia, serif;">🔍 Поиск по тегам</h5>
+            <form action="{% url 'tag_search' %}" method="get" class="mb-3">
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control" 
+                           name="q" 
+                           placeholder="Введите теги через запятую..."
+                           value="{{ request.GET.q }}">
+                    <button class="btn" type="submit" style="background-color: #453518; color: white;">
+                        Найти
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        Пример: романтика, драма, фэнтези
+                    </small>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Список тегов -->
+    {% if tags_list %}
+    <div class="card">
+        <div class="card-header" style="background-color: #f8f4e8;">
+            <h5 class="mb-0">📋 Все теги</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                {% for tag in tags_list %}
+                <a href="{% url 'tag_detail' tag.slug %}" 
+                   class="btn btn-outline-secondary mb-2">
+                    {{ tag.name }} 
+                    <span class="badge bg-primary ms-1">{{ tag.count }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Пока нет тегов. Создайте первый фанфик!
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

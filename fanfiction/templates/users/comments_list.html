@@ -1,0 +1,94 @@
+<!-- templates/users/comments_list.html -->
+{% for comment in comments %}
+    <div class="comment mb-3" id="comment-{{ comment.id }}" 
+         style="margin-left: {% if comment.temp_level %}{% widthratio comment.temp_level 1 30 %}{% else %}0{% endif %}px;
+                border-left: {% if comment.temp_level and comment.temp_level > 0 %}3px solid #eddcae{% else %}none{% endif %};
+                padding-left: {% if comment.temp_level and comment.temp_level > 0 %}15px{% else %}0{% endif %};">
+        <div class="card border-0" style="background-color: {% if comment.temp_level and comment.temp_level > 0 %}#fdfaf0{% else %}transparent{% endif %};">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <strong style="color: #453518;">
+                            {{ comment.author.nickname|default:comment.author.username }}
+                        </strong>
+                        <small class="text-muted ms-2">
+                            {{ comment.created_at|date:"d.m.Y H:i" }}
+                            {% if comment.is_edited %}
+                                <span class="badge" style="background-color: #eddcae !important; color: #453518; font-size: 0.7rem;">
+                                    <i class="bi bi-pencil"></i> изменен
+                                </span>
+                            {% endif %}
+                        </small>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="border-color: #eddcae; color: #453518;">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% if user.is_authenticated %}
+                            <li>
+                                <button class="dropdown-item reply-btn" 
+                                        data-comment-id="{{ comment.id }}"
+                                        data-author="{{ comment.author.nickname|default:comment.author.username }}"
+                                        style="color: #453518;">
+                                    <i class="bi bi-reply me-2"></i>Ответить
+                                </button>
+                            </li>
+                            {% endif %}
+                            {% if user.is_authenticated and comment.can_edit %}
+                            <li>
+                                <button class="dropdown-item edit-comment-btn" 
+                                        data-comment-id="{{ comment.id }}"
+                                        style="color: #453518;">
+                                    <i class="bi bi-pencil me-2"></i>Редактировать
+                                </button>
+                            </li>
+                            {% endif %}
+                            {% if user.is_authenticated and comment.can_delete %}
+                            <li>
+                                <button class="dropdown-item delete-comment-btn" 
+                                        data-comment-id="{{ comment.id }}"
+                                        style="color: #dc3545;">
+                                    <i class="bi bi-trash me-2"></i>Удалить
+                                </button>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="comment-content mb-2" style="color: #5a4a32;">
+                    {{ comment.content|linebreaks }}
+                </div>
+                
+                {% if comment.temp_children and comment.temp_children|length > 0 %}
+                <div class="replies-toggle mb-2">
+                    <button class="btn btn-sm show-replies-btn" 
+                            data-comment-id="{{ comment.id }}"
+                            style="background-color: #eddcae; color: #453518; border: none; font-size: 0.8rem;">
+                        <i class="bi bi-chevron-down me-1"></i>
+                        Ответов: {{ comment.temp_children|length }}
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Дочерние комментарии -->
+        {% if comment.temp_children %}
+            <div class="replies-container" id="replies-{{ comment.id }}" style="display: none;">
+                {% with comments=comment.temp_children %}
+                    {% include 'users/comments_list.html' %}
+                {% endwith %}
+            </div>
+        {% endif %}
+    </div>
+{% empty %}
+    <div class="text-center py-4" style="color: #5a4a32;">
+        <i class="bi bi-chat-dots display-6 d-block mb-2"></i>
+        <h5>Пока нет комментариев</h5>
+        <p>Будьте первым, кто оставит комментарий!</p>
+    </div>
+{% endfor %}

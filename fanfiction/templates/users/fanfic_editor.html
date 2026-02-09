@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header" style="background-color: #453518; color: white;">
+                    <h4 class="mb-0">
+                        {% if form.instance.pk %}Редактирование фанфика{% else %}Новый фанфик{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="fanfic-form" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            <div id="title-error" class="text-danger" style="display: none;">
+                                <small>Название не может быть пустым</small>
+                            </div>
+                            {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                            {{ form.description }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.tags.id_for_label }}" class="form-label">{{ form.tags.label }}</label>
+                            {{ form.tags }}
+                            <div class="form-text">{{ form.tags.help_text }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
+                            {{ form.content }}
+                            <div id="content-error" class="text-danger" style="display: none;">
+                                <small>Содержание не может быть пустым</small>
+                            </div>
+                            {% if form.content.errors %}
+                            <div class="text-danger">
+                                {% for error in form.content.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% if form.instance.pk %}Сохранить изменения{% else %}Создать фанфик{% endif %}
+                            </button>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                                Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('fanfic-form');
+    const titleInput = document.getElementById('id_title');
+    const contentInput = document.getElementById('id_content');
+    const titleError = document.getElementById('title-error');
+    const contentError = document.getElementById('content-error');
+    
+    function validateTitle() {
+        const title = titleInput.value;
+        if (!title || title.trim() === '') {
+            titleError.style.display = 'block';
+            return false;
+        } else {
+            titleError.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateContent() {
+        const content = contentInput.value;
+        if (!content || content.trim() === '') {
+            contentError.style.display = 'block';
+            return false;
+        } else {
+            contentError.style.display = 'none';
+            return true;
+        }
+    }
+    titleInput.addEventListener('input', validateTitle);
+    titleInput.addEventListener('blur', validateTitle); 
+    
+    contentInput.addEventListener('input', validateContent);
+    contentInput.addEventListener('blur', validateContent); 
+    form.addEventListener('submit', function(e) {
+        const isTitleValid = validateTitle();
+        const isContentValid = validateContent();
+        
+        if (!isTitleValid || !isContentValid) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

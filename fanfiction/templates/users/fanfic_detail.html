@@ -1,0 +1,535 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header" style="background-color: #453518; color: white;">
+                    <h2 class="mb-0">{{ fanfic.title }}</h2>
+                    <!-- БАДЖ СТАТУСА - ТОЛЬКО ДЛЯ НЕОПУБЛИКОВАННЫХ -->
+                    <div class="mt-2">
+                        {% if fanfic.status == 'draft' %}
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-pencil"></i> Черновик
+                        </span>
+                        {% elif fanfic.status == 'archived' %}
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-archive"></i> В архиве
+                        </span>
+                        {% elif fanfic.status == 'deleted' %}
+                        <span class="badge bg-danger">
+                            <i class="bi bi-trash"></i> В корзине
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- БЛОКИРОВКА КОНТЕНТА ДЛЯ НЕАВТОРА ЧЕРНОВИКА -->
+                {% if fanfic.status != 'published' and user != fanfic.author %}
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-lock display-1 text-muted mb-3"></i>
+                    <h3>Фанфик недоступен</h3>
+                    <p class="text-muted">
+                        {% if fanfic.status == 'draft' %}
+                        Этот фанфик находится в черновиках и доступен только автору.
+                        {% elif fanfic.status == 'archived' %}
+                        Этот фанфик находится в архиве.
+                        {% elif fanfic.status == 'deleted' %}
+                        Этот фанфик был удален.
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'index' %}" class="btn btn-primary mt-3">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                </div>
+                
+                {% else %}
+                <!-- ОСНОВНОЙ КОНТЕНТ (ТОЛЬКО ДЛЯ АВТОРА ИЛИ ОПУБЛИКОВАННЫХ) -->
+                <div class="card-body">
+                    <!-- Мета-информация -->
+                    <div class="d-flex flex-wrap gap-3 mb-4 text-muted">
+                        <span>
+                            <i class="bi bi-person"></i> Автор: {{ fanfic.author.username }}
+                        </span>
+                        
+                        <!-- СКРЫТЬ СЧЕТЧИК ПРОСМОТРОВ ДЛЯ ЧЕРНОВИКОВ -->
+                        {% if fanfic.status == 'published' or fanfic.status == 'draft' %}
+                        <span>
+                            <i class="bi bi-eye"></i> {{ fanfic.views_count }} просмотров
+                        </span>
+                        {% endif %}
+                        
+                        <span>
+                            <i class="bi bi-calendar"></i> Создан: {{ fanfic.created_at|date:"d.m.Y" }}
+                        </span>
+                        {% if fanfic.updated_at != fanfic.created_at %}
+                        <span>
+                            <i class="bi bi-pencil"></i> Обновлено: {{ fanfic.updated_at|date:"d.m.Y" }}
+                        </span>
+                        {% endif %}
+                        
+                        <!-- СКРЫТЬ ЗАКЛАДКИ И КОММЕНТАРИИ ДЛЯ ЧЕРНОВИКОВ -->
+                        {% if fanfic.status == 'published' %}
+                            {% if fanfic.get_bookmarks_count > 0 %}
+                            <span>
+                                <i class="bi bi-bookmark-star"></i> В закладках: {{ fanfic.get_bookmarks_count }}
+                            </span>
+                            {% endif %}
+                            {% if comments_count > 0 %}
+                            <span>
+                                <i class="bi bi-chat-text"></i> Комментариев: {{ comments_count }}
+                            </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Бейдж популярности - ТОЛЬКО ДЛЯ ОПУБЛИКОВАННЫХ -->
+                    {% if fanfic.status == 'published' %}
+                        {% if fanfic.views_count > 100 %}
+                        <div class="mb-4">
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-fire"></i> Горячий фанфик! Более 100 просмотров
+                            </span>
+                        </div>
+                        {% elif fanfic.views_count > 50 %}
+                        <div class="mb-4">
+                            <span class="badge bg-info text-dark">
+                                <i class="bi bi-graph-up"></i> Популярный! Более 50 просмотров
+                            </span>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <!-- Описание -->
+                    {% if fanfic.description %}
+                    <div class="mb-4">
+                        <h5 style="color: #453518;">Описание</h5>
+                        <p class="lead" style="color: #5a4a32;">{{ fanfic.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Теги -->
+                    {% if fanfic.tags %}
+                    <div class="mb-4">
+                        <h5 style="color: #453518;">Теги</h5>
+                        <div>
+                            {% for tag in fanfic.get_tags_list %}
+                                {% if tag %}
+                                    {% with tag_slug=tag|slugify %}
+                                        {% if tag_slug %}
+                                            <a href="{% url 'tag_detail' tag_slug %}" 
+                                               class="fanfic-tag">
+                                                {{ tag }}
+                                            </a>
+                                        {% else %}
+                                            <span class="fanfic-tag" style="cursor: default;">{{ tag }}</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Содержание -->
+                    <div class="mb-4">
+                        <h5 style="color: #453518; border-bottom: 2px solid #eddcae; padding-bottom: 8px;">
+                            Содержание
+                        </h5>
+                        <div class="fanfic-content mt-3">
+                            {{ fanfic.content }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <div class="d-flex flex-wrap gap-2 justify-content-between">
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- УМНАЯ КНОПКА НАЗАД -->
+                            <button onclick="goBack()" class="btn btn-back">
+                                <i class="bi bi-arrow-left"></i> Назад
+                            </button>
+                        </div>
+                        
+                        <!-- Кнопка закладки - ТОЛЬКО ДЛЯ ОПУБЛИКОВАННЫХ -->
+                        {% if fanfic.status == 'published' %}
+                        <div>
+                            {% if user.is_authenticated %}
+                                {% if is_bookmarked %}
+                                <a href="{% url 'toggle_bookmark' fanfic.pk %}" 
+                                   class="btn btn-bookmark bookmarked">
+                                    <i class="bi bi-bookmark-check-fill"></i> В закладках
+                                </a>
+                                {% else %}
+                                <a href="{% url 'toggle_bookmark' fanfic.pk %}" 
+                                   class="btn btn-bookmark">
+                                    <i class="bi bi-bookmark-plus"></i> В закладки
+                                </a>
+                                {% endif %}
+                            {% else %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" 
+                               class="btn btn-login-to-bookmark">
+                                <i class="bi bi-bookmark"></i> Войдите, чтобы добавить
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- СЕКЦИЯ КОММЕНТАРИЕВ - ТОЛЬКО ДЛЯ ОПУБЛИКОВАННЫХ -->
+                {% if fanfic.status == 'published' %}
+                <div class="card mt-4">
+                    <div class="card-header" style="background-color: #453518; color: white;">
+                        <h5 class="mb-0">
+                            <i class="bi bi-chat-text"></i> Комментарии
+                            {% if comments_count > 0 %}
+                            <span class="badge bg-light text-dark ms-2">{{ comments_count }}</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Форма добавления комментария -->
+                        {% if user.is_authenticated %}
+                        <div class="mb-4">
+                            <form method="post" action="{% url 'add_comment' fanfic.pk %}" 
+                                  id="comment-form" class="ajax-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="parent_id" id="parent_id" value="">
+                                
+                                <div class="mb-3">
+                                    <textarea name="content" class="form-control comment-textarea" 
+                                              rows="3" placeholder="Напишите комментарий..." 
+                                              maxlength="5000" required></textarea>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary" id="submit-comment" style="background-color: #453518; border-color: #453518;">
+                                        <i class="bi bi-send me-1"></i>Отправить
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            id="cancel-reply" style="display:none; border-color: #eddcae; color: #453518;">
+                                        <i class="bi bi-x-circle me-1"></i>Отменить ответ
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="mb-4">
+                            <p class="text-muted">
+                                Чтобы оставить комментарий, пожалуйста 
+                                <a href="{% url 'login' %}?next={{ request.path }}" class="text-primary">
+                                    войдите
+                                </a> 
+                                или 
+                                <a href="{% url 'register' %}" class="text-primary">
+                                    зарегистрируйтесь
+                                </a>.
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Список комментариев -->
+                        <div id="comments-container">
+                            {% if comments %}
+                                {% include 'users/comments_list.html' %}
+                            {% else %}
+                                <div class="text-center py-4" style="color: #5a4a32;">
+                                    <i class="bi bi-chat-dots display-6 d-block mb-2"></i>
+                                    <h5>Пока нет комментариев</h5>
+                                    <p>Будьте первым, кто оставит комментарий!</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %} <!-- Закрываем блок проверки статуса -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Простая функция для навигации назад с обработкой зацикливания
+function goBack() {
+    const referrer = document.referrer;
+    
+    // Проверяем, пришли ли из редактора или создания фанфика
+    const fromEditor = referrer && (referrer.includes('/fanfic/edit/') || referrer.includes('/fanfic/create/'));
+    
+    // Проверяем, является ли фанфик черновиком, архивом или удаленным
+    const isSpecialStatus = "{{ fanfic.status }}" === 'draft' || 
+                            "{{ fanfic.status }}" === 'archived' || 
+                            "{{ fanfic.status }}" === 'deleted';
+    
+    // Если пришли из редактора или это специальный статус - идем в профиль
+    if (fromEditor || isSpecialStatus) {
+        window.location.href = "{% url 'profile' %}";
+        return;
+    }
+    
+    // Если зацикливание (referrer равен текущей странице)
+    if (referrer && referrer === window.location.href) {
+        // Пытаемся вернуться на 2 страницы назад
+        if (window.history.length > 1) {
+            window.history.go(-2);
+        } else {
+            window.location.href = "{% url 'index' %}";
+        }
+        return;
+    }
+    
+    // Если есть история и можно вернуться
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        // Иначе на главную
+        window.location.href = "{% url 'index' %}";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Функции для закладок
+    const bookmarkLinks = document.querySelectorAll('a[href*="toggle_bookmark"]');
+    
+    bookmarkLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.href;
+            
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_bookmarked) {
+                    this.innerHTML = '<i class="bi bi-bookmark-check-fill"></i> В закладках';
+                    this.classList.add('bookmarked');
+                } else {
+                    this.innerHTML = '<i class="bi bi-bookmark-plus"></i> В закладки';
+                    this.classList.remove('bookmarked');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                window.location.href = url;
+            });
+        });
+    });
+    
+    // Система комментариев
+    const commentForm = document.getElementById('comment-form');
+    const parentIdInput = document.getElementById('parent_id');
+    const cancelReplyBtn = document.getElementById('cancel-reply');
+    const commentsContainer = document.getElementById('comments-container');
+    const submitCommentBtn = document.getElementById('submit-comment');
+    let replyingTo = null;
+    
+    // Обработка ответа на комментарий
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('reply-btn') || e.target.closest('.reply-btn')) {
+            e.preventDefault();
+            const target = e.target.classList.contains('reply-btn') ? e.target : e.target.closest('.reply-btn');
+            replyingTo = target.dataset.commentId;
+            const author = target.dataset.author;
+            
+            parentIdInput.value = replyingTo;
+            if (cancelReplyBtn) cancelReplyBtn.style.display = 'inline-block';
+            
+            commentForm.scrollIntoView({ behavior: 'smooth' });
+            
+            const textarea = commentForm.querySelector('textarea');
+            if (textarea) {
+                textarea.value = `@${author}, `;
+                textarea.focus();
+            }
+        }
+        
+        // Отмена ответа
+        if (e.target.id === 'cancel-reply' || e.target.closest('#cancel-reply')) {
+            parentIdInput.value = '';
+            replyingTo = null;
+            if (cancelReplyBtn) cancelReplyBtn.style.display = 'none';
+            const textarea = commentForm.querySelector('textarea');
+            if (textarea) textarea.value = '';
+        }
+    });
+    
+    // AJAX отправка формы комментария
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const originalText = submitCommentBtn.innerHTML;
+            
+            submitCommentBtn.innerHTML = '<i class="bi bi-arrow-clockwise spin me-1"></i>Отправка...';
+            submitCommentBtn.disabled = true;
+            
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadComments();
+                    this.reset();
+                    if (cancelReplyBtn) cancelReplyBtn.click();
+                } else {
+                    console.error('Ошибка при отправке комментария:', data.error || data.errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitCommentBtn.innerHTML = originalText;
+                submitCommentBtn.disabled = false;
+            });
+        });
+    }
+    
+    // Загрузка комментариев через AJAX
+    function loadComments() {
+        fetch(window.location.href, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.comments_html) {
+                commentsContainer.innerHTML = data.comments_html;
+                initCommentEvents();
+            }
+        })
+        .catch(error => console.error('Error loading comments:', error));
+    }
+    
+    // Инициализация событий для комментариев
+    function initCommentEvents() {
+        // Обработчики для кнопок редактирования
+        document.querySelectorAll('.edit-comment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                editComment(commentId);
+            });
+        });
+        
+        // Обработчики для кнопок удаления
+        document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                    deleteComment(commentId);
+                }
+            });
+        });
+        
+        // Обработчики для показа/скрытия ответов
+        document.querySelectorAll('.show-replies-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const repliesContainer = document.getElementById(`replies-${commentId}`);
+                if (repliesContainer) {
+                    if (repliesContainer.style.display === 'none') {
+                        repliesContainer.style.display = 'block';
+                        this.innerHTML = '<i class="bi bi-chevron-up me-1"></i>Скрыть ответы';
+                    } else {
+                        repliesContainer.style.display = 'none';
+                        this.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Показать ответы';
+                    }
+                }
+            });
+        });
+    }
+    
+    // Удаление комментария
+    function deleteComment(commentId) {
+        fetch(`/users/comment/${commentId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadComments();
+            } else {
+                console.error('Ошибка удаления комментария:', data.error);
+            }
+        });
+    }
+    
+    // Редактирование комментария
+    function editComment(commentId) {
+        const commentContent = document.querySelector(`#comment-${commentId} .comment-content`);
+        const currentText = commentContent.textContent.trim();
+        
+        const editTextarea = document.createElement('textarea');
+        editTextarea.className = 'form-control mb-2 comment-edit-textarea';
+        editTextarea.value = currentText;
+        editTextarea.rows = 3;
+        
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn btn-sm btn-primary me-2';
+        saveBtn.innerHTML = '<i class="bi bi-check"></i> Сохранить';
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-sm btn-outline-secondary';
+        cancelBtn.innerHTML = '<i class="bi bi-x"></i> Отмена';
+        
+        commentContent.innerHTML = '';
+        commentContent.appendChild(editTextarea);
+        commentContent.appendChild(saveBtn);
+        commentContent.appendChild(cancelBtn);
+        
+        saveBtn.addEventListener('click', function() {
+            const newContent = editTextarea.value.trim();
+            if (newContent && newContent !== currentText) {
+                fetch(`/users/comment/${commentId}/edit/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `content=${encodeURIComponent(newContent)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        commentContent.innerHTML = newContent.replace(/\n/g, '<br>');
+                    } else {
+                        console.error('Ошибка обновления комментария:', data.error);
+                        commentContent.innerHTML = currentText;
+                    }
+                });
+            } else {
+                commentContent.innerHTML = currentText;
+            }
+        });
+        
+        cancelBtn.addEventListener('click', function() {
+            commentContent.innerHTML = currentText;
+        });
+    }
+    
+    // Инициализируем события при загрузке
+    if (commentsContainer.children.length > 0) {
+        initCommentEvents();
+    }
+});
+</script>
+{% endblock %}

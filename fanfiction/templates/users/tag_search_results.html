@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-3 py-md-5 mobile-padding">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10">
+                <!-- Шапка результатов поиска -->
+                <div class="card mb-4" style="border: 2px solid #453518; border-radius: 12px;">
+                    <div class="card-header" style="background-color: #453518; color: white;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h4 class="mb-2">🔍 Результаты поиска</h4>
+                                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                    {% for tag in tags_list %}
+                                    <span class="badge" style="background-color: #eddcae; color: #453518;">
+                                        {{ tag }}
+                                    </span>
+                                    {% endfor %}
+                                    <span class="badge" style="background-color: #7d6b4f; color: white;">
+                                        {% if search_type == 'all' %}Все теги{% else %}Любой тег{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <a href="{% url 'tag_search' %}" class="btn btn-sm mt-2 mt-md-0" 
+                               style="background-color: #eddcae; color: #453518; border: none;">
+                                Новый поиск
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Количество результатов -->
+                        <div class="alert mb-0" style="background-color: #eddcae; border: 2px solid #453518; color: #453518;">
+                            <h5 class="mb-2">Найдено фанфиков: {{ fanfics_count }}</h5>
+                            <p class="mb-0">
+                                {% if search_type == 'all' %}
+                                Фанфики, содержащие <strong>все</strong> указанные теги
+                                {% else %}
+                                Фанфики, содержащие <strong>любой</strong> из указанных тегов
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Результаты -->
+                {% if fanfics %}
+                <h2 class="h2 mb-4 text-center" style="color: #453518;">
+                    📚 Найденные фанфики
+                </h2>
+                
+                {% for fanfic in fanfics %}
+                <div class="story-card mb-4">
+                    <h3 class="story-title">{{ fanfic.title }}</h3>
+                    
+                    <!-- Автор -->
+                    <div class="story-author mb-2">Автор: {{ fanfic.author.username }}</div>
+                    
+                    <!-- Счетчик просмотров -->
+                    <div class="d-flex gap-3 mb-3 text-muted" style="font-size: 0.9rem;">
+                        <span>
+                            <i class="bi bi-eye"></i> {{ fanfic.views_count }} просмотров
+                        </span>
+                        <span>
+                            <i class="bi bi-calendar"></i> {{ fanfic.created_at|date:"d.m.Y" }}
+                        </span>
+                    </div>
+                    
+                    <!-- Описание -->
+                    {% if fanfic.description %}
+                    <p class="story-description">{{ fanfic.description|truncatewords:40 }}</p>
+                    {% endif %}
+                    
+                    <!-- Теги фанфика -->
+                    {% if fanfic.tags %}
+                    <div class="story-tags mb-3">
+                        {% for tag in fanfic.get_tags_list %}
+                            {% if tag %}
+                                {% with tag_slug=tag|slugify %}
+                                    {% if tag_slug %}
+                                        <a href="{% url 'tag_detail' tag_slug %}" 
+                                           class="tag {% if tag in tags_list %}" 
+                                           style="background: #453518 !important; color: #fdf6e3 !important; font-weight: bold;"{% endif %}>
+                                            {{ tag }}
+                                        </a>
+                                    {% else %}
+                                        <span class="tag {% if tag in tags_list %}" 
+                                              style="background: #453518 !important; color: #fdf6e3 !important; font-weight: bold;"{% endif %}>
+                                            {{ tag }}
+                                        </span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Футер с кнопкой справа -->
+                    <div class="story-footer d-flex justify-content-between align-items-center">
+                        <small class="story-date text-muted">{{ fanfic.created_at|date:"d.m.Y" }}</small>
+                        <a href="{% url 'fanfic_detail' fanfic.pk %}" class="btn btn-read">Читать</a>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% else %}
+                <!-- Пустые результаты -->
+                <div class="text-center py-5">
+                    <h4 class="h4 mb-3" style="color: #453518;">😔 Не найдено фанфиков</h4>
+                    <p class="text-muted mb-4">
+                        {% if search_type == 'all' %}
+                        Нет фанфиков, содержащих все указанные теги
+                        {% else %}
+                        Нет фанфиков с указанными тегами
+                        {% endif %}
+                    </p>
+                    
+                    <div class="mb-4">
+                        <p class="text-dark mb-3 fw-bold">Попробуйте:</p>
+                        <ul class="text-start d-inline-block text-center" style="list-style: none; padding: 0; max-width: 400px;">
+                            <li class="mb-2">• Убрать некоторые теги</li>
+                            <li class="mb-2">• Проверить написание тегов</li>
+                            <li class="mb-2">• Использовать {% if search_type == 'all' %}поиск по любому тегу{% else %}поиск по всем тегам{% endif %}</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'tag_search' %}" class="btn me-2 mb-2" 
+                           style="background-color: #453518; color: white; border: none;">
+                            🔍 Новый поиск
+                        </a>
+                        <a href="{% url 'all_tags' %}" class="btn mb-2" 
+                           style="background-color: #eddcae; color: #453518; border: 2px solid #453518;">
+                            🏷️ Все теги
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

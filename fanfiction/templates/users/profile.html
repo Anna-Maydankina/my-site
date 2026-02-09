@@ -1,16 +1,19 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-10">
+            <!-- Заголовок -->
             <div class="text-center mb-4">
                 <h1 style="color: #453518;">Личный кабинет</h1>
                 <p class="lead">Добро пожаловать в ваш личный кабинет!</p>
             </div>
 
+            <!-- Основная информация -->
             <div class="card mb-4">
-                <div class="card-header" style="background-color: #453518; color: white;">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #453518; color: white;">
                     <h4 class="mb-0">Основная информация</h4>
                 </div>
                 <div class="card-body">
@@ -31,6 +34,16 @@
                                         {% endif %}
                                     </td>
                                 </tr>
+                                <tr>
+                                    <th>Страна:</th>
+                                    <td>
+                                        {% if user.country %}
+                                            {{ user.get_country_display }}
+                                        {% else %}
+                                            <span class="text-muted">Не указана</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
@@ -40,6 +53,17 @@
                                     <td>
                                         {% if user.email %}
                                             {{ user.email }}
+                                        {% else %}
+                                            <span class="text-muted">Не указан</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <!-- ДОБАВЛЕН ТЕЛЕФОН -->
+                                <tr>
+                                    <th>Телефон:</th>
+                                    <td>
+                                        {% if user.phone %}
+                                            {{ user.phone }}
                                         {% else %}
                                             <span class="text-muted">Не указан</span>
                                         {% endif %}
@@ -55,160 +79,534 @@
                 </div>
             </div>
 
-            
-
+            <!-- Действия -->
             <div class="card mb-4">
                 <div class="card-header" style="background-color: #453518; color: white;">
                     <h4 class="mb-0">Действия</h4>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-3">
-                            <button class="btn w-100" style="background-color: #453518; color: white;">
+                        <div class="col-md-4">
+                            <a href="{% url 'fanfic_create' %}" class="btn w-100" style="background-color: #453518; color: white; text-decoration: none;">
                                 📝 Новая история
-                            </button>
+                            </a>
                         </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-outline-secondary w-100">
+                        <div class="col-md-4">
+                            <a href="{% url 'my_bookmarks' %}" class="btn w-100" 
+                               style="background-color: #28a745; color: white; border: none; text-decoration: none;">
                                 🔖 Мои закладки
-                            </button>
+                                {% if bookmarks_count > 0 %}
+                                <span class="badge bg-light text-dark ms-1">{{ bookmarks_count }}</span>
+                                {% endif %}
+                            </a>
                         </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-outline-secondary w-100">
-                                ⚙️ Настройки
-                            </button>
-                        </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-outline-secondary w-100">
-                                📊 Статистика
-                            </button>
+                        <div class="col-md-4">
+                            <a href="{% url 'profile_edit' %}" class="btn btn-outline-secondary w-100">
+                                ⚙️ Редактировать профиль
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-
-             <div class="card mb-4">
+            <!-- Опубликованные истории -->
+            <div class="card mb-4">
                 <div class="card-header" style="background-color: #28a745; color: white;">
                     <h4 class="mb-0">📢 Опубликованные истории</h4>
                 </div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="card border-success">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="card-title mb-0">Тест</h5>
-                                        <div>
-                                            <small class="text-muted">Опубликовано: 05.11.2024</small>
-                                            <span class="badge bg-success ms-2">Активно</span>
+                    {% if published_fanfics %}
+                        <div class="row g-3">
+                            {% for fanfic in published_fanfics %}
+                            <div class="col-12">
+                                <div class="card border-success">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title mb-0">{{ fanfic.title }}</h5>
+                                            <div>
+                                                <small class="text-muted">Опубликовано: {{ fanfic.created_at|date:"d.m.Y" }}</small>
+                                                <span class="badge bg-success ms-2">Активно</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <p class="card-text">Примерный показ для опубликованных историй.</p>
-                                    <div class="mb-3">
-                                        <span class="badge bg-primary me-1">Тест</span>
-                                        <span class="badge bg-info me-1">1.2K просмотров</span>
-                                        <span class="badge bg-warning text-dark">47 лайков</span>
-                                    </div>
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button class="btn btn-sm btn-outline-primary">Редактировать</button>
-                                        <button class="btn btn-sm btn-outline-danger">Удалить</button>
-                                        <button class="btn btn-sm btn-outline-warning">В архив</button>
-                                        <button class="btn btn-sm btn-outline-secondary">Комментарии (12)</button>
+                                        {% if fanfic.description %}
+                                        <p class="card-text">{{ fanfic.description|truncatewords:30 }}</p>
+                                        {% endif %}
+                                        {% if fanfic.tags %}
+                                        <div class="mb-3">
+                                            {% for tag in fanfic.get_tags_list %}
+                                            <span class="badge bg-primary me-1">{{ tag }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <a href="{% url 'fanfic_detail' fanfic.pk %}" class="btn btn-sm btn-outline-primary">Читать</a>
+                                            <a href="{% url 'fanfic_edit' fanfic.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                                            <a href="{% url 'archive_fanfic' fanfic.pk %}" 
+                                               class="btn btn-sm btn-outline-warning">
+                                                В архив
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" data-bs-target="#moveToTrashModal{{ fanfic.id }}">
+                                                Удалить
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <p>У вас пока нет опубликованных историй</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
+
+            <!-- Мои черновики -->
             <div class="card mb-4">
                 <div class="card-header" style="background-color: #6c757d; color: white;">
                     <h4 class="mb-0">📁 Мои черновики</h4>
                 </div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="card-title mb-0">Тестовик для черновика</h5>
-                                        <small class="text-muted">Изменено: 10.11.2024</small>
-                                    </div>
-                                    <p class="card-text">Примерный вид карточки для черновиков</p>
-                                    <div class="mb-3">
-                                        <span class="badge bg-secondary me-1">Черновик</span>
-                                        <span class="badge bg-secondary">Незавершено</span>
-                                    </div>
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button class="btn btn-sm btn-outline-primary">Редактировать</button>
-                                        <button class="btn btn-sm btn-outline-success">Опубликовать</button>
-                                        <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                    {% if draft_fanfics %}
+                        <div class="row g-3">
+                            {% for fanfic in draft_fanfics %}
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title mb-0">{{ fanfic.title }}</h5>
+                                            <small class="text-muted">Изменено: {{ fanfic.updated_at|date:"d.m.Y" }}</small>
+                                        </div>
+                                        {% if fanfic.description %}
+                                        <p class="card-text">{{ fanfic.description|truncatewords:30 }}</p>
+                                        {% endif %}
+                                        <div class="mb-3">
+                                            <span class="badge bg-secondary me-1">Черновик</span>
+                                            <span class="badge bg-secondary">Незавершено</span>
+                                        </div>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <a href="{% url 'fanfic_detail' fanfic.pk %}" class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye me-1"></i>Прочитать
+                                            </a>
+                                            <a href="{% url 'fanfic_edit' fanfic.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil me-1"></i>Редактировать
+                                            </a>
+                                            <a href="{% url 'publish_fanfic' fanfic.pk %}" 
+                                               class="btn btn-sm btn-outline-success">
+                                                <i class="bi bi-upload me-1"></i>Опубликовать
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" data-bs-target="#moveToTrashModal{{ fanfic.id }}">
+                                                <i class="bi bi-trash me-1"></i>Удалить
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <p>У вас пока нет черновиков</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
+            <!-- Архив историй -->
             <div class="card mb-4">
                 <div class="card-header" style="background-color: #ffc107; color: black;">
                     <h4 class="mb-0">📦 Архив историй</h4>
                 </div>
                 <div class="card-body">
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">Тестовик для архива</h5>
-                                <small class="text-muted">В архиве с: 01.11.2024</small>
+                    {% if archived_fanfics %}
+                        <div class="list-group">
+                            {% for fanfic in archived_fanfics %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ fanfic.title }}</h5>
+                                    <small class="text-muted">В архиве с: {{ fanfic.updated_at|date:"d.m.Y" }}</small>
+                                </div>
+                                {% if fanfic.description %}
+                                <p class="mb-1">{{ fanfic.description|truncatewords:20 }}</p>
+                                {% endif %}
+                                {% if fanfic.tags %}
+                                <div class="mb-3">
+                                    {% for tag in fanfic.get_tags_list %}
+                                    <span class="badge bg-warning text-dark me-1">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <a href="{% url 'fanfic_detail' fanfic.pk %}" class="btn btn-sm btn-outline-info me-1">
+                                        <i class="bi bi-eye me-1"></i>Прочитать
+                                    </a>
+                                    <a href="{% url 'publish_fanfic' fanfic.pk %}" 
+                                       class="btn btn-sm btn-outline-success me-1">
+                                        <i class="bi bi-upload me-1"></i>Опубликовать
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" data-bs-target="#moveToTrashModal{{ fanfic.id }}">
+                                        <i class="bi bi-trash me-1"></i>Удалить
+                                    </button>
+                                </div>
                             </div>
-                            <p class="mb-1">Визуализация карточки с историей для архива</p>
-                            <div class="mb-3">
-                                <span class="badge bg-warning text-dark me-1">Учёба</span>
-                                <span class="badge bg-warning text-dark me-1">Тест</span>
-                            </div>
-                            <div class="d-flex gap-1 flex-wrap">
-                                <button class="btn btn-sm btn-outline-success me-1">Восстановить</button>
-                                <button class="btn btn-sm btn-outline-info me-1">Предпросмотр</button>
-                                <button class="btn btn-sm btn-outline-danger">Удалить</button>
-                            </div>
-                        
+                            {% endfor %}
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <p>Архив пуст</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
+            <!-- Корзина -->
             <div class="card">
-                <div class="card-header" style="background-color: #dc3545; color: white;">
-                    <h4 class="mb-0">🗑️ Удаленные истории</h4>
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #dc3545; color: white;">
+                    <h4 class="mb-0">🗑️ Корзина</h4>
+                    {% if deleted_fanfics %}
+                    <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#clearTrashModal">
+                        Очистить корзину
+                    </button>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <div class="alert alert-warning">
                         <strong>Внимание!</strong> Истории будут окончательно удалены через 30 дней.
                     </div>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="card-title mb-0">Тестовик для удаления</h5>
-                                        <small class="text-muted">Удалено: 20.10.2024</small>
-                                    </div>
-                                    <p class="card-text">Цифры пока только для визуализации.</p>
-                                    <div class="mb-3">
-                                        <span class="badge bg-danger me-1">Удалено</span>
-                                        <span class="badge bg-secondary">Удалится: 20.11.2024</span>
-                                    </div>
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button class="btn btn-sm btn-outline-success">Восстановить</button>
-                                        <button class="btn btn-sm btn-outline-secondary">Предпросмотр</button>
-                                        <button class="btn btn-sm btn-outline-dark">Удалить навсегда</button>
+                    
+                    {% if deleted_fanfics %}
+                        <div class="row g-3">
+                            {% for fanfic in deleted_fanfics %}
+                            <div class="col-12">
+                                <div class="card border-danger">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title mb-0">{{ fanfic.title }}</h5>
+                                            <div>
+                                                <small class="text-muted">
+                                                    {% if fanfic.deleted_at %}
+                                                        Удалено: {{ fanfic.deleted_at|date:"d.m.Y H:i" }}
+                                                    {% else %}
+                                                        Удалено: {{ fanfic.updated_at|date:"d.m.Y H:i" }}
+                                                    {% endif %}
+                                                </small>
+                                                <span class="badge bg-danger ms-2">
+                                                    {% if fanfic.purge_at %}
+                                                        Удалится: {{ fanfic.purge_at|date:"d.m.Y" }}
+                                                    {% else %}
+                                                        Удалится: скоро
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if fanfic.description %}
+                                        <p class="card-text">{{ fanfic.description|truncatewords:30 }}</p>
+                                        {% endif %}
+                                        
+                                        <div class="mb-3">
+                                            <span class="badge bg-danger me-1">В корзине</span>
+                                            <span class="badge bg-warning text-dark">
+                                                Осталось дней: 
+                                                {% if fanfic.days_until_purge %}
+                                                    {{ fanfic.days_until_purge }}
+                                                {% else %}
+                                                    30
+                                                {% endif %}
+                                            </span>
+                                            {% if fanfic.tags %}
+                                            <div class="mt-2">
+                                                {% for tag in fanfic.get_tags_list %}
+                                                <span class="badge bg-secondary me-1">{{ tag }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <a href="{% url 'restore_from_trash' fanfic.pk %}" 
+                                               class="btn btn-sm btn-outline-success">
+                                                Восстановить
+                                            </a>
+                                            <a href="{% url 'fanfic_detail' fanfic.pk %}" 
+                                               class="btn btn-sm btn-outline-secondary">
+                                                Предпросмотр
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-dark" 
+                                                    data-bs-toggle="modal" data-bs-target="#deletePermanentlyModal{{ fanfic.id }}">
+                                                Удалить навсегда
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <p class="mb-0">Корзина пуста</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальные окна для "Удалить" (перемещение в корзину) -->
+{% for fanfic in published_fanfics %}
+<div class="modal fade" id="moveToTrashModal{{ fanfic.id }}" tabindex="-1" aria-labelledby="moveToTrashModalLabel{{ fanfic.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moveToTrashModalLabel{{ fanfic.id }}" style="color: #453518;">
+                    <i class="bi bi-trash me-2 text-danger"></i>Переместить в корзину
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+                    <h4 class="h4 mb-3" style="color: #453518;">Переместить в корзину?</h4>
+                    <p class="text-muted mb-3">
+                        Фанфик "<strong>{{ fanfic.title }}</strong>" будет перемещен в корзину.
+                    </p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Фанфик будет окончательно удален через <strong>30 дней</strong>
+                    </div>
+                </div>
+                
+                <p class="text-dark mb-3">Вы сможете восстановить фанфик из корзины в течение 30 дней.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'move_to_trash' fanfic.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-trash me-2"></i>Да, в корзину
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for fanfic in draft_fanfics %}
+<div class="modal fade" id="moveToTrashModal{{ fanfic.id }}" tabindex="-1" aria-labelledby="moveToTrashModalLabel{{ fanfic.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moveToTrashModalLabel{{ fanfic.id }}" style="color: #453518;">
+                    <i class="bi bi-trash me-2 text-danger"></i>Переместить черновик в корзину
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+                    <h4 class="h4 mb-3" style="color: #453518;">Удалить черновик?</h4>
+                    <p class="text-muted mb-3">
+                        Черновик "<strong>{{ fanfic.title }}</strong>" будет перемещен в корзину.
+                    </p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Черновик будет окончательно удален через <strong>30 дней</strong>
+                    </div>
+                </div>
+                
+                <p class="text-dark mb-3">Вы сможете восстановить черновик из корзины в течение 30 дней.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'move_to_trash' fanfic.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-trash me-2"></i>Да, в корзину
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for fanfic in archived_fanfics %}
+<div class="modal fade" id="moveToTrashModal{{ fanfic.id }}" tabindex="-1" aria-labelledby="moveToTrashModalLabel{{ fanfic.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="moveToTrashModalLabel{{ fanfic.id }}" style="color: #453518;">
+                    <i class="bi bi-trash me-2 text-danger"></i>Переместить архив в корзину
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+                    <h4 class="h4 mb-3" style="color: #453518;">Удалить из архива?</h4>
+                    <p class="text-muted mb-3">
+                        Архивная запись "<strong>{{ fanfic.title }}</strong>" будет перемещена в корзину.
+                    </p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Фанфик будет окончательно удален через <strong>30 дней</strong>
+                    </div>
+                </div>
+                
+                <p class="text-dark mb-3">Вы сможете восстановить фанфик из корзины в течение 30 дней.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'move_to_trash' fanfic.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-trash me-2"></i>Да, в корзину
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Модальные окна для "Удалить навсегда" (из корзины) -->
+{% for fanfic in deleted_fanfics %}
+<div class="modal fade" id="deletePermanentlyModal{{ fanfic.id }}" tabindex="-1" aria-labelledby="deletePermanentlyModalLabel{{ fanfic.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePermanentlyModalLabel{{ fanfic.id }}" style="color: #453518;">
+                    <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Удаление навсегда
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-trash3 display-1 text-danger mb-3"></i>
+                    <h4 class="h4 mb-3" style="color: #453518;">Удалить навсегда?</h4>
+                    <p class="text-muted mb-3">
+                        Фанфик "<strong>{{ fanfic.title }}</strong>" будет удален безвозвратно.
+                    </p>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        Это действие нельзя будет отменить!
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="text-dark mb-2 fw-bold">После удаления вы потеряете:</p>
+                    <ul class="text-start" style="list-style: none; padding-left: 0;">
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Весь текст фанфика</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Все комментарии и отзывы</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Все просмотры и статистику</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Все теги и метаданные</li>
+                    </ul>
+                </div>
+                
+                {% if fanfic.days_until_purge %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-clock me-2"></i>
+                    Если не удалять сейчас, фанфик будет автоматически удален через <strong>{{ fanfic.days_until_purge }}</strong> дней
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'delete_permanently' fanfic.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check-circle me-2"></i>Да, удалить навсегда
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Модальное окно подтверждения очистки корзины -->
+{% if deleted_fanfics %}
+<div class="modal fade" id="clearTrashModal" tabindex="-1" aria-labelledby="clearTrashModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clearTrashModalLabel" style="color: #453518;">
+                    <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Подтверждение очистки корзины
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-trash3 display-1 text-danger mb-3"></i>
+                    <h4 class="h4 mb-3" style="color: #453518;">Очистить всю корзину?</h4>
+                    <p class="text-muted mb-3">
+                        Вы собираетесь удалить все фанфики из корзины безвозвратно.
+                    </p>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        Всего будет удалено: <strong>{{ deleted_fanfics|length }}</strong> фанфиков
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="text-dark mb-2 fw-bold">После удаления вы не сможете:</p>
+                    <ul class="text-start" style="list-style: none; padding-left: 0;">
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Восстановить удаленные фанфики</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Вернуть их в архив или черновики</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Найти их через поиск или теги</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Это действие нельзя отменить. Все данные будут удалены навсегда.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form method="post" action="{% url 'empty_trash' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check-circle me-2"></i>Да, очистить корзину
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Плавная анимация для карточек
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    // Анимация для всех карточек
+    document.querySelectorAll('.card, .list-group-item').forEach(function(card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+});
+</script>
 {% endblock %}

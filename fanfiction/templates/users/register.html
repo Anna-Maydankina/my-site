@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -7,7 +13,7 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title text-center mb-4">Регистрация</h2>
-                    <form method="post">
+                    <form method="post" id="register-form" novalidate>
                         {% csrf_token %}
                         
                         {% if form.errors %}
@@ -26,17 +32,135 @@
                             </div>
                         {% endif %}
 
-                        {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">
-                                {{ field.label }}
-                            </label>
-                            {{ field }}
-                            {% if field.help_text %}
-                            <div class="form-text">{{ field.help_text|safe }}</div>
+                        <div class="mb-3 position-relative">
+                            <label for="id_username" class="form-label">Имя пользователя</label>
+                            {{ form.username }}
+                            <div class="validation-tooltip" id="username-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="username-tooltip-content"></div>
+                            </div>
+                            <div class="validation-status" id="username-status"></div>
+                            {% if form.username.errors %}
+                            <div class="text-danger">
+                                {% for error in form.username.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
                             {% endif %}
                         </div>
-                        {% endfor %}
+
+                        <div class="mb-3 position-relative">
+                            <label for="id_nickname" class="form-label">Никнейм</label>
+                            {{ form.nickname }}
+                            <div class="validation-tooltip" id="nickname-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="nickname-tooltip-content"></div>
+                            </div>
+                            {% if form.nickname.help_text %}
+                            <div class="form-text">{{ form.nickname.help_text|safe }}</div>
+                            {% endif %}
+                            {% if form.nickname.errors %}
+                            <div class="text-danger">
+                                {% for error in form.nickname.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 position-relative">
+                            <label for="id_email" class="form-label">Email</label>
+                            {{ form.email }}
+                            <div class="validation-tooltip" id="email-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="email-tooltip-content"></div>
+                            </div>
+                            <div class="validation-status" id="email-status"></div>
+                            {% if form.email.errors %}
+                            <div class="text-danger">
+                                {% for error in form.email.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 position-relative">
+                            <label for="id_phone" class="form-label">{{ form.phone.label }}</label>
+                            {{ form.phone }}
+                            <div class="validation-tooltip" id="phone-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="phone-tooltip-content"></div>
+                            </div>
+                            <div class="validation-status" id="phone-status"></div>
+                            {% if form.phone.help_text %}
+                            <div class="form-text">{{ form.phone.help_text }}</div>
+                            {% endif %}
+                            {% if form.phone.errors %}
+                            <div class="text-danger">
+                                {% for error in form.phone.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 position-relative">
+                            <label for="id_country" class="form-label">Страна</label>
+                            {{ form.country }}
+                            <div class="validation-tooltip" id="country-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="country-tooltip-content"></div>
+                            </div>
+                            {% if form.country.help_text %}
+                            <div class="form-text">{{ form.country.help_text|safe }}</div>
+                            {% endif %}
+                            {% if form.country.errors %}
+                            <div class="text-danger">
+                                {% for error in form.country.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 position-relative">
+                            <label for="id_password1" class="form-label">Пароль</label>
+                            {{ form.password1 }}
+                            <div class="validation-tooltip" id="password1-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="password1-tooltip-content"></div>
+                            </div>
+                            {% if form.password1.help_text %}
+                            <div class="form-text">{{ form.password1.help_text|safe }}</div>
+                            {% endif %}
+                            {% if form.password1.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password1.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 position-relative">
+                            <label for="id_password2" class="form-label">Подтверждение пароля</label>
+                            {{ form.password2 }}
+                            <div class="validation-tooltip" id="password2-tooltip" style="display: none;">
+                                <div class="tooltip-arrow"></div>
+                                <div class="tooltip-content" id="password2-tooltip-content"></div>
+                            </div>
+                            {% if form.password2.help_text %}
+                            <div class="form-text">{{ form.password2.help_text|safe }}</div>
+                            {% endif %}
+                            {% if form.password2.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password2.errors %}
+                                <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
                         
                         <button type="submit" class="btn btn-primary w-100 mb-3" style="background-color: #453518; border-color: #453518;">
                             Зарегистрироваться
@@ -54,4 +178,575 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('register-form');
+    const usernameInput = document.getElementById('id_username');
+    const nicknameInput = document.getElementById('id_nickname');
+    const emailInput = document.getElementById('id_email');
+    const phoneInput = document.getElementById('id_phone');
+    const countryInput = document.getElementById('id_country');
+    const password1Input = document.getElementById('id_password1');
+    const password2Input = document.getElementById('id_password2');
+
+    // CSRF токен для AJAX запросов
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // === ФУНКЦИИ ДЛЯ РАБОТЫ С ТУЛТИПАМИ ===
+    function showTooltip(fieldId, message, type = 'error') {
+        const tooltip = document.getElementById(`${fieldId}-tooltip`);
+        const content = document.getElementById(`${fieldId}-tooltip-content`);
+        const arrow = tooltip.querySelector('.tooltip-arrow');
+        
+        content.textContent = message;
+        tooltip.style.display = 'block';
+        
+        // Обновляем классы в зависимости от типа сообщения
+        tooltip.className = `validation-tooltip ${type}`;
+        arrow.className = `tooltip-arrow ${type}`;
+        
+        // Добавляем класс ошибки к полю ввода
+        const input = document.getElementById(`id_${fieldId}`);
+        if (input) {
+            if (type === 'error') {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            } else if (type === 'success') {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+            }
+        }
+    }
+    
+    function hideTooltip(fieldId) {
+        const tooltip = document.getElementById(`${fieldId}-tooltip`);
+        tooltip.style.display = 'none';
+        
+        // Убираем стили ошибки
+        const input = document.getElementById(`id_${fieldId}`);
+        if (input) {
+            input.classList.remove('is-invalid');
+        }
+    }
+    
+    // === ФУНКЦИИ ДЛЯ СТАТУСОВ ПРОВЕРКИ ===
+    function showStatus(fieldId, type, message = '') {
+        const status = document.getElementById(`${fieldId}-status`);
+        status.className = `validation-status ${type}`;
+        status.textContent = type === 'loading' ? '⏳' : 
+                            type === 'success' ? '✓' : 
+                            type === 'error' ? '✗' : '';
+        
+        // Показываем всплывающую подсказку с сообщением
+        if (message) {
+            status.title = message;
+        }
+    }
+    
+    function hideStatus(fieldId) {
+        const status = document.getElementById(`${fieldId}-status`);
+        status.className = 'validation-status';
+        status.textContent = '';
+        status.title = '';
+    }
+    
+    // === ОБЩИЕ ФУНКЦИИ ДЛЯ БЛОКИРОВКИ ПРОБЕЛОВ ===
+    function preventSpaces(e) {
+        if (e.key === ' ') {
+            e.preventDefault();
+            return false;
+        }
+    }
+    
+    function removeSpacesOnInput(e) {
+        let value = e.target.value;
+        if (value.includes(' ')) {
+            e.target.value = value.replace(/\s/g, '');
+        }
+    }
+    
+    // === ФУНКЦИИ ВАЛИДАЦИИ ===
+    
+    // Проверка существующего email через AJAX
+    function checkEmailExists(email) {
+        return new Promise((resolve) => {
+            if (!email || email.trim() === '') {
+                resolve({ exists: false });
+                return;
+            }
+            
+            // Показываем индикатор загрузки
+            showStatus('email', 'loading', 'Проверяем email...');
+            
+            fetch('/api/check-email/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideStatus('email');
+                if (data.exists) {
+                    showStatus('email', 'error', 'Email уже зарегистрирован');
+                    showTooltip('email', 'Этот email уже зарегистрирован', 'error');
+                } else if (data.available) {
+                    showStatus('email', 'success', 'Email доступен');
+                    hideTooltip('email');
+                }
+                resolve(data);
+            })
+            .catch(error => {
+                console.error('Error checking email:', error);
+                hideStatus('email');
+                resolve({ exists: false, error: true });
+            });
+        });
+    }
+    
+    // Проверка существующего username через AJAX
+    function checkUsernameExists(username) {
+        return new Promise((resolve) => {
+            if (!username || username.trim() === '' || username.length < 3) {
+                resolve({ exists: false });
+                return;
+            }
+            
+            // Показываем индикатор загрузки
+            showStatus('username', 'loading', 'Проверяем имя пользователя...');
+            
+            fetch('/api/check-username/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ username: username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideStatus('username');
+                if (data.exists) {
+                    showStatus('username', 'error', 'Имя уже занято');
+                    showTooltip('username', 'Это имя пользователя уже занято', 'error');
+                } else if (data.available) {
+                    showStatus('username', 'success', 'Имя доступно');
+                    hideTooltip('username');
+                }
+                resolve(data);
+            })
+            .catch(error => {
+                console.error('Error checking username:', error);
+                hideStatus('username');
+                resolve({ exists: false, error: true });
+            });
+        });
+    }
+    
+    // Проверка существующего телефона через AJAX
+    function checkPhoneExists(phone) {
+        return new Promise((resolve) => {
+            if (!phone || phone.trim() === '') {
+                resolve({ exists: false });
+                return;
+            }
+            
+            // Очищаем номер для проверки
+            const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+            
+            // Показываем индикатор загрузки
+            showStatus('phone', 'loading', 'Проверяем номер телефона...');
+            
+            fetch('/api/check-phone/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ phone: cleanPhone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideStatus('phone');
+                if (data.exists) {
+                    showStatus('phone', 'error', 'Номер уже зарегистрирован');
+                    showTooltip('phone', 'Этот номер телефона уже зарегистрирован', 'error');
+                } else if (data.available) {
+                    showStatus('phone', 'success', 'Номер доступен');
+                    hideTooltip('phone');
+                }
+                resolve(data);
+            })
+            .catch(error => {
+                console.error('Error checking phone:', error);
+                hideStatus('phone');
+                resolve({ exists: false, error: true });
+            });
+        });
+    }
+    
+    async function validateUsername() {
+        const username = usernameInput.value;
+        
+        if (!username || username.trim() === '') {
+            showTooltip('username', 'Имя пользователя не может быть пустым', 'error');
+            showStatus('username', 'error', 'Обязательное поле');
+            return false;
+        } else if (username.length < 3) {
+            showTooltip('username', 'Имя пользователя должно содержать минимум 3 символа', 'error');
+            showStatus('username', 'error', 'Слишком короткое');
+            return false;
+        } else if (/\s/.test(username)) {
+            showTooltip('username', 'Имя пользователя не должно содержать пробелов', 'error');
+            showStatus('username', 'error', 'Пробелы запрещены');
+            return false;
+        }
+        
+        // Проверяем существующего пользователя
+        const result = await checkUsernameExists(username);
+        if (result.exists) {
+            return false;
+        }
+        
+        return result.available || true;
+    }
+    
+    function validateNickname() {
+        const nickname = nicknameInput.value;
+        
+        if (!nickname || nickname.trim() === '') {
+            showTooltip('nickname', 'Никнейм не может быть пустым', 'error');
+            return false;
+        } else if (nickname.length < 2) {
+            showTooltip('nickname', 'Никнейм должен содержать минимум 2 символа', 'error');
+            return false;
+        } else if (/\s/.test(nickname)) {
+            showTooltip('nickname', 'Никнейм не должен содержать пробелов', 'error');
+            return false;
+        } else {
+            hideTooltip('nickname');
+            return true;
+        }
+    }
+    
+    async function validateEmail() {
+        const email = emailInput.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!email || email.trim() === '') {
+            showTooltip('email', 'Email не может быть пустым', 'error');
+            showStatus('email', 'error', 'Обязательное поле');
+            return false;
+        } else if (!emailRegex.test(email)) {
+            showTooltip('email', 'Введите корректный email адрес', 'error');
+            showStatus('email', 'error', 'Неверный формат');
+            return false;
+        } else if (/\s/.test(email)) {
+            showTooltip('email', 'Email не должен содержать пробелов', 'error');
+            showStatus('email', 'error', 'Пробелы запрещены');
+            return false;
+        }
+        
+        // Проверяем существующий email
+        const result = await checkEmailExists(email);
+        if (result.exists) {
+            return false;
+        }
+        
+        return result.available || true;
+    }
+    
+    async function validatePhone() {
+        const phone = phoneInput.value;
+        
+        // Если поле пустое - это нормально (необязательное поле)
+        if (!phone || phone.trim() === '') {
+            hideTooltip('phone');
+            hideStatus('phone');
+            return true;
+        }
+        
+        // Удаляем все пробелы, дефисы, скобки для проверки
+        const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+        
+        // Международный формат телефона
+        const phoneRegex = /^\+?[0-9]{1,3}[0-9]{9,14}$/;
+        
+        if (!phoneRegex.test(cleanPhone)) {
+            showTooltip('phone', 'Неверный формат. Примеры: +79161234567, 380501234567', 'error');
+            showStatus('phone', 'error', 'Неверный формат');
+            return false;
+        }
+        
+        const phoneWithoutPlus = cleanPhone.replace(/^\+/, '');
+        if (phoneWithoutPlus.length < 10 || phoneWithoutPlus.length > 16) {
+            showTooltip('phone', 'От 10 до 16 цифр (включая код страны)', 'error');
+            showStatus('phone', 'error', 'Неверная длина');
+            return false;
+        }
+        
+        // Проверяем существующий телефон
+        const result = await checkPhoneExists(cleanPhone);
+        if (result.exists) {
+            return false;
+        }
+        
+        return result.available || true;
+    }
+    
+    function validateCountry() {
+        const country = countryInput.value;
+        
+        if (!country) {
+            showTooltip('country', 'Пожалуйста, выберите страну', 'error');
+            return false;
+        } else {
+            hideTooltip('country');
+            return true;
+        }
+    }
+    
+    function validatePassword1() {
+        const password = password1Input.value;
+        
+        if (!password || password.trim() === '') {
+            showTooltip('password1', 'Пароль не может быть пустым', 'error');
+            return false;
+        } else if (password.length < 8) {
+            showTooltip('password1', 'Пароль должен содержать минимум 8 символов', 'error');
+            return false;
+        } else if (/\s/.test(password)) {
+            showTooltip('password1', 'Пароль не должен содержать пробелов', 'error');
+            return false;
+        } else {
+            hideTooltip('password1');
+            return true;
+        }
+    }
+    
+    function validatePassword2() {
+        const password1 = password1Input.value;
+        const password2 = password2Input.value;
+        
+        if (!password2 || password2.trim() === '') {
+            showTooltip('password2', 'Подтвердите пароль', 'error');
+            return false;
+        } else if (password1 !== password2) {
+            showTooltip('password2', 'Пароли не совпадают', 'error');
+            return false;
+        } else if (/\s/.test(password2)) {
+            showTooltip('password2', 'Пароль не должен содержать пробелов', 'error');
+            return false;
+        } else {
+            hideTooltip('password2');
+            return true;
+        }
+    }
+    
+    // Автоматическое форматирование телефона
+    function formatPhoneInput(e) {
+        let value = e.target.value;
+        let newValue = value.replace(/[^\d+]/g, '');
+        
+        const plusIndex = newValue.indexOf('+');
+        if (plusIndex > 0) {
+            newValue = newValue.replace(/\+/g, '');
+            newValue = '+' + newValue;
+        }
+        
+        if (newValue.length > 17) {
+            newValue = newValue.substring(0, 17);
+        }
+        
+        e.target.value = newValue;
+        
+        // Немедленно проверяем телефон
+        if (newValue.length >= 10) {
+            validatePhone();
+        } else {
+            hideTooltip('phone');
+            hideStatus('phone');
+        }
+    }
+    
+    // === ДЕБАУНС ДЛЯ АСИНХРОННОЙ ПРОВЕРКИ ===
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // === ПРИМЕНЯЕМ ОБРАБОТЧИКИ К ПОЛЯМ ===
+    if (usernameInput) {
+        usernameInput.addEventListener('keydown', preventSpaces);
+        usernameInput.addEventListener('input', removeSpacesOnInput);
+        usernameInput.addEventListener('input', debounce(function() {
+            if (usernameInput.value.length >= 3) {
+                validateUsername();
+            }
+        }, 500));
+        usernameInput.addEventListener('blur', validateUsername);
+        usernameInput.addEventListener('focus', function() {
+            hideTooltip('username');
+        });
+    }
+    
+    if (nicknameInput) {
+        nicknameInput.addEventListener('keydown', preventSpaces);
+        nicknameInput.addEventListener('input', removeSpacesOnInput);
+        nicknameInput.addEventListener('input', debounce(function() {
+            if (nicknameInput.value.length >= 2) {
+                validateNickname();
+            }
+        }, 300));
+        nicknameInput.addEventListener('blur', validateNickname);
+        nicknameInput.addEventListener('focus', function() {
+            hideTooltip('nickname');
+        });
+    }
+    
+    if (emailInput) {
+        emailInput.addEventListener('keydown', preventSpaces);
+        emailInput.addEventListener('input', removeSpacesOnInput);
+        emailInput.addEventListener('input', debounce(function() {
+            const email = emailInput.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && emailRegex.test(email)) {
+                validateEmail();
+            }
+        }, 500));
+        emailInput.addEventListener('blur', validateEmail);
+        emailInput.addEventListener('focus', function() {
+            hideTooltip('email');
+        });
+    }
+    
+    if (phoneInput) {
+        phoneInput.addEventListener('keydown', function(e) {
+            if (
+                (e.key >= '0' && e.key <= '9') ||
+                e.key === '+' ||
+                e.key === 'Backspace' ||
+                e.key === 'Delete' ||
+                e.key === 'Tab' ||
+                e.key === 'ArrowLeft' ||
+                e.key === 'ArrowRight' ||
+                e.key === 'Home' ||
+                e.key === 'End'
+            ) {
+                return;
+            }
+            e.preventDefault();
+        });
+        
+        phoneInput.addEventListener('input', function(e) {
+            formatPhoneInput(e);
+            if (phoneInput.value.includes(' ')) {
+                phoneInput.value = phoneInput.value.replace(/\s/g, '');
+            }
+        });
+        
+        phoneInput.addEventListener('blur', validatePhone);
+        phoneInput.addEventListener('focus', function() {
+            hideTooltip('phone');
+        });
+        
+        phoneInput.title = "Формат: +код страны номер (например: +79161234567, 380501234567)";
+        
+        if (phoneInput.value) {
+            phoneInput.value = phoneInput.value.replace(/\s/g, '');
+        }
+    }
+    
+    if (countryInput) {
+        countryInput.addEventListener('change', validateCountry);
+        countryInput.addEventListener('blur', validateCountry);
+        countryInput.addEventListener('focus', function() {
+            hideTooltip('country');
+        });
+    }
+    
+    if (password1Input) {
+        password1Input.addEventListener('keydown', preventSpaces);
+        password1Input.addEventListener('input', removeSpacesOnInput);
+        password1Input.addEventListener('input', debounce(validatePassword1, 300));
+        password1Input.addEventListener('blur', validatePassword1);
+        password1Input.addEventListener('focus', function() {
+            hideTooltip('password1');
+        });
+        password1Input.addEventListener('input', function() {
+            if (password2Input) validatePassword2();
+        });
+    }
+    
+    if (password2Input) {
+        password2Input.addEventListener('keydown', preventSpaces);
+        password2Input.addEventListener('input', removeSpacesOnInput);
+        password2Input.addEventListener('input', debounce(validatePassword2, 300));
+        password2Input.addEventListener('blur', validatePassword2);
+        password2Input.addEventListener('focus', function() {
+            hideTooltip('password2');
+        });
+    }
+    
+    // === ОБРАБОТКА ОТПРАВКИ ФОРМЫ ===
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        let isValid = true;
+        
+        // Валидируем все поля
+        if (usernameInput) isValid = await validateUsername() && isValid;
+        if (nicknameInput) isValid = validateNickname() && isValid;
+        if (emailInput) isValid = await validateEmail() && isValid;
+        if (phoneInput) isValid = await validatePhone() && isValid;
+        if (countryInput) isValid = validateCountry() && isValid;
+        if (password1Input) isValid = validatePassword1() && isValid;
+        if (password2Input) isValid = validatePassword2() && isValid;
+        
+        if (!isValid) {
+            // Прокручиваем к первой ошибке
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus();
+            }
+            
+            return false;
+        }
+        
+        // Удаляем пробелы перед отправкой
+        [usernameInput, nicknameInput, emailInput, password1Input, password2Input].forEach(input => {
+            if (input && input.value) {
+                input.value = input.value.replace(/\s/g, '');
+            }
+        });
+        
+        // Если все валидно, отправляем форму
+        form.submit();
+    });
+    
+    
+    if (countryInput && phoneInput) {
+        countryInput.addEventListener('change', function() {
+            const countryCode = this.value;
+            const phoneCode = countryPhoneCodes[countryCode];
+            
+            if (phoneCode && (!phoneInput.value || phoneInput.value === '')) {
+                phoneInput.value = phoneCode;
+                phoneInput.focus();
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

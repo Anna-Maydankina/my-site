@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-3 py-md-5 mobile-padding">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10">
+                <h1 class="h2 mb-4 text-center" style="color: #453518;">🏷️ Тег: {{ tag_name }}</h1>
+                <p class="text-center text-muted mb-4">Найдено {{ fanfics_count }} фанфиков</p>
+                
+                {% if fanfics %}
+                    {% for fanfic in fanfics %}
+                    <div class="story-card mb-4">
+                        <h3 class="story-title">{{ fanfic.title }}</h3>
+                        
+                        <!-- Автор -->
+                        <div class="story-author mb-2">Автор: {{ fanfic.author.username }}</div>
+                        
+                        <!-- Счетчик просмотров -->
+                        <div class="d-flex gap-3 mb-3 text-muted" style="font-size: 0.9rem;">
+                            <span>
+                                <i class="bi bi-eye"></i> {{ fanfic.views_count }} просмотров
+                            </span>
+                            <span>
+                                <i class="bi bi-calendar"></i> {{ fanfic.created_at|date:"d.m.Y" }}
+                            </span>
+                        </div>
+                        
+                        <!-- Описание -->
+                        {% if fanfic.description %}
+                        <p class="story-description">{{ fanfic.description|truncatewords:30 }}</p>
+                        {% endif %}
+                        
+                        <!-- Теги фанфика -->
+                        {% if fanfic.tags %}
+                        <div class="story-tags mb-3">
+                            {% for tag in fanfic.get_tags_list %}
+                                {% if tag %}
+                                    {% with tag_slug=tag|slugify %}
+                                        {% if tag_slug %}
+                                            <a href="{% url 'tag_detail' tag_slug %}" class="tag">
+                                                {{ tag }}
+                                            </a>
+                                        {% else %}
+                                            <span class="tag">{{ tag }}</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Футер с кнопкой справа -->
+                        <div class="story-footer d-flex justify-content-between align-items-center">
+                            <small class="story-date text-muted">{{ fanfic.created_at|date:"d.m.Y" }}</small>
+                            <a href="{% url 'fanfic_detail' fanfic.pk %}" class="btn btn-read">Читать</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted">Нет фанфиков с этим тегом.</p>
+                    <a href="{% url 'fanfic_create' %}" class="btn" style="background-color: #453518; color: white;">
+                        📝 Создать фанфик с этим тегом
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
